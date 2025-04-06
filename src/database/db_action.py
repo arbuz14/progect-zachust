@@ -1,7 +1,7 @@
 from uuid import uuid4
 
 from src.database.base import db
-from src.database.models import Product, Review
+from src.database.models import Product, Review, User
 
 
 def get_products():
@@ -47,3 +47,19 @@ def add_review_product(product_id: str, text: str):
     product.reviews.append(review)
     db.session.commit()
     return "Відгук успішно додано"
+
+def buy_product(product_id: str, name: str) -> str:
+    product = Product.query.filter_by(id=product_id).one_or_404()
+    
+    user = User.query.filter_by(name=name).first()
+    
+    if not user:
+        user = User(id=str(uuid4()), name=name)  
+        db.session.add(user)  # Додаємо нового користувача до сесії
+
+    if user not in product.users:  # Перевіряємо, чи вже є зв'язок у багатьох-до-багатьох
+        product.users.append(user)
+
+    db.session.commit()
+    
+    return f"Користувач {name} успішно купив товар {product.name}"

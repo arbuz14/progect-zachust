@@ -4,9 +4,9 @@ from typing import Optional
 from flask import Flask, jsonify
 from flask_restful import Resource, Api, reqparse
 from dotenv import load_dotenv
+from flask_migrate import Migrate
 
 from src.database.base import db
-from src.data import parse_products
 from src.database import db_action
 
 load_dotenv()
@@ -14,6 +14,7 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("SQLALCHEMY_URI")
 db.init_app(app)
 api = Api(app)
+migrate = Migrate(app,db)
 
 # with app.app_context():
     #db.create_all()
